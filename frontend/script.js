@@ -44,7 +44,7 @@ async function uploadImage() {
 
     try {
     // Make sure this fetch URL is correct!
-    const response = await fetch("http://127.0.0.1:8000/detect", {
+    const response = await fetch("http://127.0.0.1:8000/analyze", {
         method: "POST",
         body: formData,
     });
@@ -54,6 +54,7 @@ async function uploadImage() {
         }
 
         const data = await response.json();
+        console.log(data)
 
         // Update UI with the final results
 // script.js (inside uploadImage function after const data = await response.json();)
