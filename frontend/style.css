@@ -1,0 +1,110 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f2fff2;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 480px;
+    margin: 50px auto;
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+h1 {
+    color: #2e7d32;
+    margin-bottom: 5px;
+}
+
+h1 span {
+    color: #388e3c;
+}
+
+.subtitle {
+    color: #666;
+    margin-bottom: 25px;
+}
+
+.upload-box {
+    margin-bottom: 20px;
+}
+
+/* Styling for the file input */
+#fileInput {
+    border: 1px solid #ccc;
+    padding: 8px;
+    border-radius: 4px;
+    width: calc(100% - 18px);
+    margin-bottom: 15px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* New styles for image preview */
+.image-preview-container {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden; /* Ensures image corners are rounded */
+    background-color: #f9f9f9;
+    padding: 5px;
+}
+
+.image-preview {
+    max-width: 100%;
+    height: auto; /* Maintain aspect ratio */
+    display: block; /* Remove extra space below image */
+    margin: 0 auto; /* Center the image */
+    border-radius: 2px; /* Slightly smaller border radius for the image itself */
+}
+
+/* Utility class to hide elements */
+.hidden {
+    display: none !important;
+}
+
+
+button {
+    background: rgb(58, 84, 102);
+    color: white;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 100%;
+    margin-top: 10px; /* Give a little space from the preview */
+}
+
+button:hover {
+    background: rgb(189, 238, 209);
+    color: #2e7d32;
+    font-weight: bolder;
+}
+
+.result-box {
+    margin-top: 20px;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    min-height: 50px; 
+    
+    /* === NEW: Use Flexbox for cleaner stacking and centering === */
+    display: flex; 
+    flex-direction: column; /* Stack children (the two new divs) vertically */
+    align-items: center;    /* Center the stacked content horizontally */
+    justify-content: center;
+}
+
+/* Add a style for the new div lines to give them structure */
+.result-line {
+    margin: 5px 0; /* Adds a small gap above and below each line */
+}
