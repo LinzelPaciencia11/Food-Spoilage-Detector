@@ -1,64 +1,60 @@
-from fastapi import FastAPI, UploadFile, File # type: ignore
-from fastapi.middleware.cors import CORSMiddleware # type: ignore
-# from fastapi.responses import HTMLResponse # <-- You can remove this if read_root is deleted
-from fastapi.staticfiles import StaticFiles # type: ignore # <-- ADD THIS IMPORT
-from ai_model import analyze_image
-import shutil
-import uuid
 import os
+import random
+from fastapi import FastAPI, File, UploadFile
+from fastapi.responses import JSONResponse
 
+# Initialize the FastAPI application
+app = FastAPI()
 
-app = FastAPI(title="AI Food Detector API")
-# Define paths correctly relative to main.py
-# In main.py
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-# Note: UPLOAD_DIR is set to "uploads"
-
-# Add this print statement when the server starts
-print(f"Server starting in directory: {BASE_DIR}")
-print(f"Files should be saved to: {os.path.join(BASE_DIR, UPLOAD_DIR)}")
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
+# Configuration
 UPLOAD_DIR = "uploads"
+# Create the uploads directory if it doesn't exist
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-# Setup CORS 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# Helper function for dummy analysis
+def analyze_image(image_path):
+    """
+    Dummy AI analysis function. 
+    It simulates an AI model by returning a random freshness result.
+    It also cleans up the file after analysis.
+    """
+    options = ["Fresh", "Slightly Old", "Spoiled"]
+    result = random.choice(options)
 
-# 2. MOUNT STATIC FILES 
-app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="static")
+    # Clean up the file after analysis
+    if os.path.exists(image_path):
+        os.remove(image_path)
+    
+    # Return a structured result
+    return {
+        "freshness": result, 
+        "confidence": round(random.uniform(0.70, 0.99), 2)
+    }
 
-# In main.py
-@app.post("/detect")
-async def detect_food(image: UploadFile = File(...)):
-    filename = f"{uuid.uuid4()}-{image.filename}"
-    filepath = os.path.join(UPLOAD_DIR, filename)
+@app.post("/analyze")
+async def analyze(file: UploadFile = File(...)):
+    # --- START of the correctly indented function body ---
+    
+    # 1. Define the file path where the uploaded file will be saved
+    file_path = os.path.join(UPLOAD_DIR, file.filename)
 
     try:
-        # 1. File Saving
-        with open(filepath, "wb") as buffer:
-            shutil.copyfileobj(image.file, buffer)
+        # 2. Save the uploaded file asynchronously
+        # The 'await' call MUST be inside this indented block
+        with open(file_path, "wb") as f:
+            # file.read() is an awaitable method for UploadFile
+            f.write(await file.read())
 
-        # 2. IMMEDIATE SUCCESS RETURN (Bypasses analyze_image)
-        return {
-            "status": "success",
-            "freshness": "File Receipt Confirmed!",
-            "confidence": f"Saved as: {filename}",
-            "uploaded_file": filename
-        }
+        # 3. Run the AI model (synchronous operation)
+        result = analyze_image(file_path)
+
+        # 4. Return the result
+        return JSONResponse({"analysis": result})
 
     except Exception as e:
-        print(f"An error occurred during detection: {e}")
-        return {"status": "error", "message": f"Processing failed: {e}"}
+        # 5. Handle errors and ensure file cleanup if saving failed
+        if os.path.exists(file_path):
+            os.remove(file_path)
+        return JSONResponse({"error": f"An error occurred during analysis: {e}"}, status_code=500)
+
+    # --- END of the function body ---
