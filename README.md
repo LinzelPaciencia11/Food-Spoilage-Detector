@@ -1,1 +1,1 @@
-# AI-Powered-Food-Expiration-Spoilage-Detector
+#Food-Spoilage-Detector
